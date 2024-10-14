@@ -3350,6 +3350,52 @@ class MiniCPMv26ChatHandler(Llava15ChatHandler):
     )
 
 
+class XgenmmChatHandler(Llava15ChatHandler):
+    CHAT_FORMAT = (
+        "{% for message in messages %}"
+        # System message
+        "{% if message.role == 'system' %}"
+        "<|system|>\n"
+        "{{ message.content }}"
+        "<|end|>\n"
+        "{% endif %}"
+        # User message
+        "{% if message.role == 'user' %}"
+        "<|user|>\n"
+        "{% if message.content is string %}"
+        "{{ message.content }}<|end|>"
+        "{% endif %}"
+        "{% if message.content is iterable %}"
+        "{% for content in message.content %}"
+        "{% if content.type == 'image_url' and content.image_url is string %}"
+        "{{ content.image_url }}\n"
+        "{% endif %}"
+        "{% if content.type == 'image_url' and content.image_url is mapping %}"
+        "{{ content.image_url.url }}\n"
+        "{% endif %}"
+        "{% endfor %}"
+        "{% for content in message.content %}"
+        "{% if content.type == 'text' %}"
+        " {{ content.text }}"
+        "{% endif %}"
+        "{% endfor %}"
+        "{% endif %}"
+        "<|end|>\n"
+        "{% endif %}"
+        # Assistant message
+        "{% if message.role == 'assistant' %}"
+        # "\n<|assistant|>\n"
+        "{{ message.content }}"
+        "{% endif %}"
+        "{% endfor %}"
+        # Generation prompt
+        "{% if add_generation_prompt %}"
+        "\n<|assistant|>"
+        "{% endif %}"
+    )
+
+
+
 @register_chat_completion_handler("chatml-function-calling")
 def chatml_function_calling(
     llama: llama.Llama,
