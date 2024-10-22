@@ -1,4 +1,4 @@
 [submodule "vendor/llama.cpp"]
     path = vendor/llama.cpp
     url = https://github.com/Yutong-Dai/llama.cpp.git
-    branch = upstream_c919d5db_hack
+    branch = upstream_c919d5db_hack_minicpmv
